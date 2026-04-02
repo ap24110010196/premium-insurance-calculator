@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Premium Insurance Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .main {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* LEFT PANEL */
+        .card {
+            width: 350px;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #00cec9;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00b894;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        /* RIGHT PANEL */
+        .stats {
+            width: 350px;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        .stat-box {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- LEFT SIDE -->
+    <div class="card">
+        <h1>Premium Insurance Calculator</h1>
+
+        <form method="POST">
+            <input type="number" name="age" placeholder="Age" required>
+            <input type="number" name="term" placeholder="Policy Term" required>
+
+            <select name="type">
+                <option>Life</option>
+                <option>Health</option>
+                <option>Vehicle</option>
+            </select>
+
+            <label><input type="checkbox" name="smoker"> Smoker</label><br>
+            <label><input type="checkbox" name="health"> Health Issues</label><br><br>
+
+            <button type="submit">Calculate Premium</button>
+        </form>
+
+        {% if premium %}
+        <div class="result">
+            <h2>₹ {{ premium }}</h2>
+            <h3>{{ risk }}</h3>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- RIGHT SIDE -->
+    {% if stats %}
+    <div class="stats">
+        <h2>📊 Analytics</h2>
+
+        <div class="stat-box">Total Users: {{ stats.total }}</div>
+        <div class="stat-box">Average: ₹ {{ stats.avg }}</div>
+        <div class="stat-box">Max: ₹ {{ stats.max }}</div>
+        <div class="stat-box">Min: ₹ {{ stats.min }}</div>
+
+        <canvas id="chart"></canvas>
+
+        <script>
+            const data = {{ stats.data | tojson }};
+            new Chart(document.getElementById('chart'), {
+                type: 'line',
+                data: {
+                    labels: data.map((_, i) => "User " + (i+1)),
+                    datasets: [{
+                        label: 'Premium Trend',
+                        data: data,
+                        borderColor: '#00cec9',
+                        fill: false
+                    }]
+                }
+            });
+        </script>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
